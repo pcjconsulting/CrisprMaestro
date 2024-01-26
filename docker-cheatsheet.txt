@@ -1,0 +1,95 @@
+Steps to build the microsoft sample image, deploy to artifactory, and run in azure linux vm
+    azure-vm
+	ssh -i ~/.ssh/nuggie-docker-key.pem azuredocker@172.183.103.27
+    run
+	docker run -it --rm -p 8000:8080 --name aspnetcore_sample mcr.microsoft.com/dotnet/samples:aspnetapp
+    sabbat
+	http://172.183.103.27:8000/
+
+Steps to build the image from https://docker-curriculum.com, deploy to artifactory, and run in azure linux vm
+   image
+	(to build see https://docker-curriculum.com)
+	docker login -ubooboojama@gmail.com pcjconsulting.jfrog.io
+	docker tag 0338af5430af pcjconsulting.jfrog.io/azure-docker/evwxw/catnip:latest
+	docker push pcjconsulting.jfrog.io/azure-docker/evwxw/catnip:latest
+    azure-vm
+	ssh -i ~/.ssh/nuggie-docker-key.pem azuredocker@172.183.103.27
+    run
+	docker login -ubooboojama@gmail.com pcjconsulting.jfrog.io
+	docker pull pcjconsulting.jfrog.io/azure-docker/evwxw/catnip:latest
+	run test container in the azure linux vm
+	docker run -it --rm --name catnip 0338af5430af
+    azure-vm
+	curl http://172.17.0.2:5000
+
+    run mapped to public
+	docker run -it --rm -p 8000:5000 --name catnip 0338af5430af
+    browse
+	http://172.183.103.27:8000/
+
+Steps to build aspnetwebapi docker image in visual studio 2022, deploy to artifactory, and run in azure linux vm
+    build
+	repo\aspnetwebapi\aspnetwebapi.sln
+	Release  Docker  run (F5)
+    browse
+	http://192.168.1.84:32769/swagger/index.html
+	http://192.168.1.84:32769/api/Workflows/4
+    cmdline
+	docker run -it --rm -p 32769:8080 --name aspnetwebapi eab0625b9ad1
+    browse
+	http://192.168.1.84:32769/api/Workflows/4
+    push
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker tag eab0625b9ad1 pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-vs:latest
+	docker push pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-vs:latest
+    azure-vm
+	ssh -i ~/.ssh/nuggie-docker-key.pem azuredocker@172.183.103.27
+    run
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker pull pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-vs:latest
+	docker run -it --rm -p 32768:8080 --name aspnetwebapi-vs eab0625b9ad1
+    browse
+	open linux-vm port 32768 on azure net
+	http://172.183.103.27:32768/api/Workflows/4
+
+Steps to build aspnetwebapi docker image in windows11 powershell, deploy to artifactory, and run in azure linux vm
+    build
+	cd c:\users\peter\source\aspnetwebapi\aspnetwebapi
+	goofy: copy .\Dockerfile ..\
+	cd ..
+	sudo docker build -t evwxw/aspnetwebapi-win11 .
+    push
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker tag 3f7de4d2c8ca pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-win11:latest
+	docker push pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-win11:latest
+    azure-vm
+	ssh -i ~/.ssh/nuggie-docker-key.pem azuredocker@172.183.103.27
+    run
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker pull pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-win11:latest
+	docker run -it --rm -p 32769:8080 --name aspnetwebapi-win11 3f7de4d2c8ca
+    browse
+	http://172.183.103.27:32768/api/Workflows/4
+
+Steps to build aspnetwebapi docker image in wsl, deploy to artifactory, and run in azure linux vm
+aspnetwebapi-wsl
+    build
+	cd /mnt/c/users/peter/source/aspnetwebapi
+	sudo docker build -t evwxw/aspnetwebapi-wsl .
+    push
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker tag ff593ae7585e pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-wsl:0002
+	docker push pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-wsl:0002
+    azure-vm
+	ssh -i ~/.ssh/nuggie-docker-key.pem azuredocker@172.183.103.27
+    run
+	docker login -u booboojama@gmail.com pcjconsulting.jfrog.io
+	docker pull pcjconsulting.jfrog.io/azure-docker/evwxw/aspnetwebapi-wsl:0002
+	docker run -it --rm -p 32768:8080 --name aspnetwebapi-wsl ff593ae7585e
+    browse
+	http://172.183.103.27:32768/api/WorkflowSteps
+
+
+NOTE
+	artifactory keeps track of layers to prevent dups across images that share identical layers
+
